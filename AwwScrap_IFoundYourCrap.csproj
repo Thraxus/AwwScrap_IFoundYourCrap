@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D063B4E4-099A-4886-8833-02930A7D0DA8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AwwScrap_IFoundYourCrap</RootNamespace>
+    <AssemblyName>AwwScrap_IFoundYourCrap</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\SteamLibrary\steamapps\common\SpaceEngineers\Bin64\netstandard.dll</HintPath>
+    </Reference>
+    <Reference Include="ProtoBuf.Net">
+      <HintPath>..\..\SteamLibrary\steamapps\common\SpaceEngineers\Bin64\ProtoBuf.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="ProtoBuf.Net.Core">
+      <HintPath>..\..\SteamLibrary\steamapps\common\SpaceEngineers\Bin64\ProtoBuf.Net.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Sandbox.Common">
+      <HintPath>..\..\SteamLibrary\steamapps\common\SpaceEngineers\Bin64\Sandbox.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Sandbox.Game">
+      <HintPath>..\..\SteamLibrary\steamapps\common\SpaceEngineers\Bin64\Sandbox.Game.dll</HintPath>
+    </Reference>
+    <Reference Include="Sandbox.Graphics">
+      <HintPath>..\..\SteamLibrary\steamapps\common\SpaceEngineers\Bin64\Sandbox.Graphics.dll</HintPath>
+    </Reference>
+    <Reference Include="Sandbox.RenderDirect">
+      <HintPath>..\..\SteamLibrary\steamapps\common\SpaceEngineers\Bin64\Sandbox.RenderDirect.dll</HintPath>
+    </Reference>
+    <Reference Include="SpaceEngineers.Game">
+      <HintPath>..\..\SteamLibrary\steamapps\common\SpaceEngineers\Bin64\SpaceEngineers.Game.dll</HintPath>
+    </Reference>
+    <Reference Include="SpaceEngineers.ObjectBuilders">
+      <HintPath>..\..\SteamLibrary\steamapps\common\SpaceEngineers\Bin64\SpaceEngineers.ObjectBuilders.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="VRage">
+      <HintPath>..\..\SteamLibrary\steamapps\common\SpaceEngineers\Bin64\VRage.dll</HintPath>
+    </Reference>
+    <Reference Include="VRage.Ansel">
+      <HintPath>..\..\SteamLibrary\steamapps\common\SpaceEngineers\Bin64\VRage.Ansel.dll</HintPath>
+    </Reference>
+    <Reference Include="VRage.Audio">
+      <HintPath>..\..\SteamLibrary\steamapps\common\SpaceEngineers\Bin64\VRage.Audio.dll</HintPath>
+    </Reference>
+    <Reference Include="VRage.Game">
+      <HintPath>..\..\SteamLibrary\steamapps\common\SpaceEngineers\Bin64\VRage.Game.dll</HintPath>
+    </Reference>
+    <Reference Include="VRage.Input">
+      <HintPath>..\..\SteamLibrary\steamapps\common\SpaceEngineers\Bin64\VRage.Input.dll</HintPath>
+    </Reference>
+    <Reference Include="VRage.Library">
+      <HintPath>..\..\SteamLibrary\steamapps\common\SpaceEngineers\Bin64\VRage.Library.dll</HintPath>
+    </Reference>
+    <Reference Include="VRage.Math">
+      <HintPath>..\..\SteamLibrary\steamapps\common\SpaceEngineers\Bin64\VRage.Math.dll</HintPath>
+    </Reference>
+    <Reference Include="VRage.Mod.Io">
+      <HintPath>..\..\SteamLibrary\steamapps\common\SpaceEngineers\Bin64\VRage.Mod.Io.dll</HintPath>
+    </Reference>
+    <Reference Include="VRage.NativeWrapper">
+      <HintPath>..\..\SteamLibrary\steamapps\common\SpaceEngineers\Bin64\VRage.NativeWrapper.dll</HintPath>
+    </Reference>
+    <Reference Include="VRage.Network">
+      <HintPath>..\..\SteamLibrary\steamapps\common\SpaceEngineers\Bin64\VRage.Network.dll</HintPath>
+    </Reference>
+    <Reference Include="VRage.Render">
+      <HintPath>..\..\SteamLibrary\steamapps\common\SpaceEngineers\Bin64\VRage.Render.dll</HintPath>
+    </Reference>
+    <Reference Include="VRage.Render11">
+      <HintPath>..\..\SteamLibrary\steamapps\common\SpaceEngineers\Bin64\VRage.Render11.dll</HintPath>
+    </Reference>
+    <Reference Include="VRage.Scripting">
+      <HintPath>..\..\SteamLibrary\steamapps\common\SpaceEngineers\Bin64\VRage.Scripting.dll</HintPath>
+    </Reference>
+    <Reference Include="VRage.Steam">
+      <HintPath>..\..\SteamLibrary\steamapps\common\SpaceEngineers\Bin64\VRage.Steam.dll</HintPath>
+    </Reference>
+    <Reference Include="VRage.UserInterface">
+      <HintPath>..\..\SteamLibrary\steamapps\common\SpaceEngineers\Bin64\VRage.UserInterface.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\BaseClasses\BaseGameLogicComp.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\BaseClasses\BaseLoggingClass.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\BaseClasses\BaseSessionComp.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\CommonCore.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\Enums\CompType.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\Enums\FactionRelationship.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\Enums\LogType.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\Factions\DataTypes\Enums\FactionTypes.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\Factions\Models\FactionDictionaries.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\Factions\Models\Settings.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\Interfaces\ICommon.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\Models\BufferedBinaryReader.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\Models\FastQueue.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\Reporting\BasicGameInformation.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\Utilities\CommonSettings.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\Utilities\FileHandlers\Load.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\Utilities\FileHandlers\Save.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\Utilities\Statics\Statics.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\Utilities\Statics\ThrusterCalculations.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\Utilities\Statics\VectorManipulations.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\Utilities\Tools\Logging\Log.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\Utilities\Tools\Logging\StaticLog.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\Utilities\Tools\Networking\ChatHandler.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\Utilities\Tools\Networking\MessageBase.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\Utilities\Tools\Networking\Messages\ExampleMessage.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\Utilities\Tools\Networking\Messaging.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\Utilities\Tools\OnScreenDisplay\QuestlogDetail.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\Utilities\Tools\OnScreenDisplay\QuestScreen.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\Utilities\Tools\Profiler.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\FoundYourCrapCore.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Models\GenericObjectPool.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Models\GrindOperationInformation.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Models\RefundOpportunity.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
