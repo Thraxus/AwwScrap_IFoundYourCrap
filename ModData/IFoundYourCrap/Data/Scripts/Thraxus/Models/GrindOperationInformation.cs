@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Text;
 using AwwScrap_IFoundYourCrap.Thraxus.Common.BaseClasses;
-using AwwScrap_IFoundYourCrap.Thraxus.Common.Enums;
 using AwwScrap_IFoundYourCrap.Thraxus.Common.Utilities.Statics;
 using Sandbox.Game;
 using Sandbox.Game.Components;
@@ -154,42 +152,25 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 		
 		private void DetermineEligibleScrap()
 		{
-			WriteToLog("DetermineEligibleScrap", $"Counts: {PlayerInventoryDeltas.Count} - {BlockComponentDeltas.Count}", LogType.General);
 			foreach (var component in BlockComponentDeltas)
 			{
 				MyStringHash lookFor = MyStringHash.GetOrCompute(component.Key + ScrapSuffix);
 				MyFixedPoint count;
 				
 				if (!PlayerInventoryDeltas.TryGetValue(lookFor, out count) || PlayerInventoryDeltas.Count == 0)
-				{
-					//RefundOpportunity ero = _refundPool.Get();
-					//ero.Count = component.Value;
-					//ero.CompSubtype = component.Key;
-					//ero.ScrapSubtype = lookFor;
-					//_excessRefundOpportunities.Add(ero);
 					continue;
-				}
 				
 				RefundOpportunity ro = _refundPool.Get();
 				ro.Count = (int)(count >= component.Value ? component.Value : count);
 				ro.CompSubtype = component.Key;
 				ro.ScrapSubtype = lookFor;
 				_refundOpportunities.Add(ro);
-				
-				//if (component.Value - ro.Count <= 0) continue;
-				
-				//RefundOpportunity ero2 = _refundPool.Get();
-				//ero2.Count = component.Value - ro.Count;
-				//ero2.CompSubtype = component.Key;
-				//ero2.ScrapSubtype = lookFor;
-				//_excessRefundOpportunities.Add(ero2);
 			}
 		}
 
 		private void RollSomeDice(List<RefundOpportunity> opportunities, List<RefundOpportunity> refunds)
 		{
 			if (opportunities.Count == 0) return;
-			WriteToLog("RollSomeDice", $"Counts: {opportunities.Count} | {refunds.Count}", LogType.General);
 			foreach (var ro in opportunities)
 			{
 				var refund = 0;
@@ -200,7 +181,6 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 					refund++;
 				}
 				if (refund <= 0) continue;
-				WriteToLog("RollSomeDice", $"[{opportunities.Count}] {ro.CompSubtype} | {ro.Count} | {refund}", LogType.General);
 				RefundOpportunity op = _refundPool.Get();
 				op.Count = refund;
 				op.CompSubtype = ro.CompSubtype;
@@ -212,60 +192,36 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 		
 		public void RefundComponents()
 		{
-			StringBuilder sb = new StringBuilder();
-			sb.AppendLine();
-			sb.AppendLine();
-			sb.AppendLine($" --- Pending Refunds [{_refunds.Count}] --- ");
-			sb.AppendLine();
-			foreach (var refund in _refunds)
-			{
-				sb.AppendFormat("{0,-4} {1} {2}", " ", refund.Count, refund.CompSubtype);
-				sb.AppendLine();
-			}
-			sb.AppendLine();
-			sb.AppendLine(" --- End Refunds --- ");
-			sb.AppendLine();
-
-			WriteToLog("RefundComponents", sb.ToString(), LogType.General);
-
 			foreach (var refund in _refunds)
 			{
 				var id = new MyDefinitionId(typeof(MyObjectBuilder_Ore), refund.ScrapSubtype);
 				int val = PlayerInventory.ComputeAmountThatFits(id).ToIntSafe();
 				val = Math.Min(refund.Count, val);
-
-
-
+				
 				if (val < refund.Count) break;
-				//{
-				//WriteToLog("RefundComponents", "All the refunds won't fit!", LogType.General);
-				//RefundOpportunity ro = _refundPool.Get();
-				//ro.Copy(refund);
-				//_excessRefunds.Add(ro);
-				//break;
-				//}
-
 				IMyInventoryItem invItem = new MyPhysicalInventoryItem()
 				{
 					Amount = val,
 					Content = MyObjectBuilderSerializer.CreateNewObject<MyObjectBuilder_Component>(refund.CompSubtype)
 				};
 
-				WriteToLog("RefundComponents",
-					!PlayerInventory.RemoveItemsOfType(refund.Count,
-						MyObjectBuilderSerializer.CreateNewObject<MyObjectBuilder_Ore>(refund.ScrapSubtype.String))
-						? $"Failed to remove {refund.Count} {refund.ScrapSubtype} from the players inventory!"
-						: $"Removed {refund.Count} {refund.ScrapSubtype} from the players inventory!", LogType.General);
+				RemoveFromInventory(PlayerInventory, refund.Count, refund.ScrapSubtype);
+				AddToInventory(PlayerInventory, refund.Count, invItem);
+
+				//WriteToLog("RefundComponents",
+				//	!PlayerInventory.RemoveItemsOfType(refund.Count,
+				//		MyObjectBuilderSerializer.CreateNewObject<MyObjectBuilder_Ore>(refund.ScrapSubtype.String))
+				//		? $"Failed to remove {refund.Count} {refund.ScrapSubtype} from the players inventory!"
+				//		: $"Removed {refund.Count} {refund.ScrapSubtype} from the players inventory!", LogType.General);
 
 				
-				WriteToLog("RefundComponents",
-					!PlayerInventory.Add(invItem, val)
-						? $"Failed to add {refund.Count} {refund.CompSubtype} to the players inventory!"
-						: $"Added {refund.Count} {refund.CompSubtype} to the players inventory!", LogType.General);
+				//WriteToLog("RefundComponents",
+				//	!PlayerInventory.Add(invItem, val)
+				//		? $"Failed to add {refund.Count} {refund.CompSubtype} to the players inventory!"
+				//		: $"Added {refund.Count} {refund.CompSubtype} to the players inventory!", LogType.General);
 			}
 
 			ReturnToPool(_refunds);
-
 			RefundRemainingStockpile();
 		}
 
@@ -279,24 +235,18 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 				if (bag == null) continue;
 				bodyBag = bag.GetInventory();
 			}
+			
 			if (bodyBag == null)
-				bodyBag = SpawnInventoryBag();
+				bodyBag = SpawnBodyBag();
 
-			if (bodyBag == null) return; // Something went horribly wrong, so just run away
-
+			if (bodyBag == null) return;
 
 			// Snapshot InventoryBag Contents
 			foreach (var item in bodyBag.GetItems())
 			{
 				if (!ValidateScrap(item.Content.SubtypeId.ToString())) continue;
-				//WriteToLog("RefundRemainingStockpile", $"Orig: {item.Content.SubtypeId}", LogType.General);
 				if (!BodyBagContents.TryAdd(item.Content.SubtypeId, item.Amount))
 					BodyBagContents[item.Content.SubtypeId] += item.Amount;
-			}
-
-			foreach (var pre in BodyBagContents)
-			{
-				WriteToLog("RefundRemainingStockpile", $"PreCount: {pre.Key} | {pre.Value}", LogType.General);
 			}
 
 			// Move Stockpile to Body Bag
@@ -306,46 +256,24 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 			foreach (var item in bodyBag.GetItems())
 			{
 				if (!ValidateScrap(item.Content.SubtypeId.ToString())) continue;
-				WriteToLog("RefundRemainingStockpile", $"PostCount: {item.Content.SubtypeId} | {item.Amount}", LogType.General);
 				MyFixedPoint amount;
 				if (!BodyBagContents.TryGetValue(item.Content.SubtypeId, out amount))
 					amount = item.Amount;
 				else amount = item.Amount - amount;
-
-				//WriteToLog("RefundRemainingStockpile", $"Final: {item.Content.SubtypeId} | {amount}", LogType.General);
 
 				RefundOpportunity ro = _refundPool.Get();
 				ro.Count = (int)amount;
 				ro.CompSubtype = item.Content.SubtypeName.Substring(0, item.Content.SubtypeName.Length - ScrapSuffix.Length);
 				ro.ScrapSubtype = item.Content.SubtypeId;
 
-				WriteToLog("RefundRemainingStockpile", $"Delta: {ro.ScrapSubtype} | {ro.Count}", LogType.General);
-
 				_excessRefundOpportunities.Add(ro);
 			}
 
 			// Roll some dice on refunds for the contents
-			WriteToLog("RefundRemainingStockpile", $"Counts: {_excessRefundOpportunities.Count} | {_excessRefunds.Count}", LogType.General);
 			RollSomeDice(_excessRefundOpportunities, _excessRefunds);
 
 			// Refund the rolls
-
-			StringBuilder sb = new StringBuilder();
-			sb.AppendLine();
-			sb.AppendLine();
-			sb.AppendLine($" --- Pending Excessive Refunds [{_excessRefunds.Count}] --- ");
-			sb.AppendLine();
-			foreach (var refund in _excessRefunds)
-			{
-				sb.AppendFormat("{0,-4} {1} {2}", " ", refund.Count, refund.CompSubtype);
-				sb.AppendLine();
-			}
-			sb.AppendLine();
-			sb.AppendLine(" --- End Excessive Refunds --- ");
-			sb.AppendLine();
-
-			WriteToLog("RefundRemainingStockpile", sb.ToString(), LogType.General);
-
+			
 			foreach (var refund in _excessRefunds)
 			{
 				IMyInventoryItem invItem = new MyPhysicalInventoryItem()
@@ -354,56 +282,61 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 					Content = MyObjectBuilderSerializer.CreateNewObject<MyObjectBuilder_Component>(refund.CompSubtype)
 				};
 
-				WriteToLog("RefundRemainingStockpile",
-					!bodyBag.RemoveItemsOfType(refund.Count,
-						MyObjectBuilderSerializer.CreateNewObject<MyObjectBuilder_Ore>(refund.ScrapSubtype.String))
-						? $"Failed to remove {refund.Count} {refund.ScrapSubtype} from the body bag!"
-						: $"Removed {refund.Count} {refund.ScrapSubtype} from the body bag!", LogType.General);
+				RemoveFromInventory(bodyBag, refund.Count, refund.ScrapSubtype);
+				AddToInventory(bodyBag, refund.Count, invItem);
+
+				//WriteToLog("RefundRemainingStockpile",
+				//	!bodyBag.RemoveItemsOfType(refund.Count,
+				//		MyObjectBuilderSerializer.CreateNewObject<MyObjectBuilder_Ore>(refund.ScrapSubtype.String))
+				//		? $"Failed to remove {refund.Count} {refund.ScrapSubtype} from the body bag!"
+				//		: $"Removed {refund.Count} {refund.ScrapSubtype} from the body bag!", LogType.General);
 
 
-				WriteToLog("RefundRemainingStockpile",
-					!bodyBag.Add(invItem, refund.Count)
-						? $"Failed to add {refund.Count} {refund.CompSubtype} to the body bag!"
-						: $"Added {refund.Count} {refund.CompSubtype} to the body bag!", LogType.General);
+				//WriteToLog("RefundRemainingStockpile",
+				//	!bodyBag.Add(invItem, refund.Count)
+				//		? $"Failed to add {refund.Count} {refund.CompSubtype} to the body bag!"
+				//		: $"Added {refund.Count} {refund.CompSubtype} to the body bag!", LogType.General);
 			}
 
 			ReturnToPool(_excessRefunds);
 		}
 
-		private MyInventory SpawnInventoryBag()
+		private static bool RemoveFromInventory(MyInventory inventory, int count,  MyStringHash scrap)
+		{
+			return inventory.RemoveItemsOfType(count, MyObjectBuilderSerializer.CreateNewObject<MyObjectBuilder_Ore>(scrap.String));
+		}
+
+		private static bool AddToInventory(MyInventory inventory, int count, IMyInventoryItem item)
+		{
+			return inventory.Add(item, count);
+		}
+
+		private MyInventory SpawnBodyBag()
 		{   //MyEntityExtensions
 
 			// Spawn below Char
 			MatrixD worldMatrix = PlayerInventory.Owner.WorldMatrix;
 			worldMatrix.Translation += worldMatrix.Down + worldMatrix.Forward;
 
-			MyDefinitionId bagDefinition = new MyDefinitionId(typeof(MyObjectBuilder_InventoryBagEntity), "AstronautBackpack");
+			var bagDefinition = new MyDefinitionId(typeof(MyObjectBuilder_InventoryBagEntity), "AstronautBackpack");
 			MyContainerDefinition definition;
 			
 			if (!MyComponentContainerExtension.TryGetContainerDefinition(bagDefinition.TypeId, bagDefinition.SubtypeId, out definition))
-			{
 				return null;
-			}
 
 			MyEntity myEntity = MyEntities.CreateFromComponentContainerDefinitionAndAdd(definition.Id, fadeIn: false);
-			
-			if (myEntity == null)
-			{
-				return null;
-			}
 
-			MyInventoryBagEntity myInventoryBagEntity = myEntity as MyInventoryBagEntity;
+			var myInventoryBagEntity = myEntity as MyInventoryBagEntity;
 			if (myInventoryBagEntity == null) return null;
 			
 			myInventoryBagEntity.OwnerIdentityId = 0;
 			MyTimerComponent component;
 			if (myInventoryBagEntity.Components.TryGet<MyTimerComponent>(out component))
 			{
-				component.ChangeTimerTick(5000);
-				//component.ChangeTimerTick((uint)(MySession.Static.Settings.BackpackDespawnTimer * 3600f));
+				component.ChangeTimerTick(10000);
 			}
 
-			myInventoryBagEntity.DisplayNameText = "AwwScrap I Found Your Crap!";
+			myInventoryBagEntity.DisplayNameText = "AwwScrap: I Found Your Crap!";
 				
 			myEntity.PositionComp.SetWorldMatrix(ref worldMatrix);
 			myEntity.Physics.LinearVelocity = Vector3.Zero;
@@ -411,7 +344,7 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 			myEntity.Render.EnableColorMaskHsv = true;
 			myEntity.Render.ColorMaskHsv = PlayerInventory.Owner.Render.ColorMaskHsv;
 
-			MyInventory backpackInventory = new MyInventory((MyFixedPoint)100,100000,new Vector3(5,5,5),MyInventoryFlags.CanSend)
+			var backpackInventory = new MyInventory((MyFixedPoint)100,100000,new Vector3(5,5,5),MyInventoryFlags.CanSend)
 			{
 				RemoveEntityOnEmpty = true
 			};
