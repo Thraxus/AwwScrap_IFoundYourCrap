@@ -152,8 +152,16 @@
     <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Models\GenericObjectPool.cs" />
     <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Models\GrindOperationInformation.cs" />
     <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Models\RefundOpportunity.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Support\Constants.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Support\UserSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="ModData\IFoundYourCrap\Data\metadata.mod" />
+    <Content Include="ModData\IFoundYourCrap\Data\Thumb.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ModData\IFoundYourCrap\Data\modinfo.sbmi" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

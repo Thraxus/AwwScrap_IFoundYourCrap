@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using AwwScrap_IFoundYourCrap.Thraxus.Common.BaseClasses;
 using AwwScrap_IFoundYourCrap.Thraxus.Common.Utilities.Statics;
+using AwwScrap_IFoundYourCrap.Thraxus.Support;
 using Sandbox.Game;
 using Sandbox.Game.Components;
 using Sandbox.Game.Entities;
@@ -21,14 +22,6 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 	public class GrindOperationInformation : BaseLoggingClass
 	{
 		protected override string Id { get; } = "GrindOperationInformation";
-
-		private const string ScrapSuffix = "Scrap";
-		private const int RefundChanceLow = 30;
-		private const int RefundChanceMid = 60;
-		private const int RefundChanceHigh = 90;
-
-		private readonly MyStringHash _angleGrinderMid = MyStringHash.GetOrCompute("AngleGrinder3");
-		private readonly MyStringHash _angleGrinderHigh = MyStringHash.GetOrCompute("AngleGrinder4");
 
 		private readonly GenericObjectPool<RefundOpportunity> _refundPool = new GenericObjectPool<RefundOpportunity>(() => new RefundOpportunity());
 
@@ -54,8 +47,6 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 		public long Tick;
 		private int _refundChance;
 
-		private static int Chance => Common.Utilities.CommonSettings.Random.Next(1, 100);
-		
 		public void Reset()
 		{
 			BeforeGrindMissingBlockComponents.Clear();
@@ -83,14 +74,14 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 
 		private static bool ValidateScrap(string compName)
 		{
-			return compName.EndsWith(ScrapSuffix, StringComparison.OrdinalIgnoreCase) && !compName.Equals(ScrapSuffix, StringComparison.OrdinalIgnoreCase);
+			return compName.EndsWith(Constants.ScrapSuffix, StringComparison.OrdinalIgnoreCase) && !compName.Equals(Constants.ScrapSuffix, StringComparison.OrdinalIgnoreCase);
 		}
 
 		private void GetBeforeItems()
 		{
-			_refundChance = Grinder.DefinitionId.SubtypeId == _angleGrinderHigh ? RefundChanceHigh :
-				Grinder.DefinitionId.SubtypeId == _angleGrinderMid ? RefundChanceMid : RefundChanceLow;
-			foreach (var item in PlayerInventory.GetItems())
+			_refundChance = Grinder.DefinitionId.SubtypeId == Constants.AngleGrinderHigh ? UserSettings.RefundChanceHigh :
+				Grinder.DefinitionId.SubtypeId == Constants.AngleGrinderMid ? UserSettings.RefundChanceMid : UserSettings.RefundChanceLow;
+			foreach (MyPhysicalInventoryItem item in PlayerInventory.GetItems())
 			{
 				
 				if (!ValidateScrap(item.Content.SubtypeId.ToString())) continue;
@@ -102,7 +93,7 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 
 		private void GetAfterItems()
 		{
-			foreach (var item in PlayerInventory.GetItems())
+			foreach (MyPhysicalInventoryItem item in PlayerInventory.GetItems())
 			{
 				if (!ValidateScrap(item.Content.SubtypeId.ToString())) continue;
 				if (!BeforeGrindPlayerInventoryItems.ContainsKey(item.Content.SubtypeId))
@@ -121,7 +112,7 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 
 			DamagedBlock.GetMissingComponents(AfterGrindMissingBlockComponents);
 
-			foreach (var comps in AfterGrindMissingBlockComponents)
+			foreach (KeyValuePair<string, int> comps in AfterGrindMissingBlockComponents)
 			{
 				if (!BeforeGrindMissingBlockComponents.ContainsKey(comps.Key))
 				{
@@ -152,9 +143,9 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 		
 		private void DetermineEligibleScrap()
 		{
-			foreach (var component in BlockComponentDeltas)
+			foreach (KeyValuePair<string, int> component in BlockComponentDeltas)
 			{
-				MyStringHash lookFor = MyStringHash.GetOrCompute(component.Key + ScrapSuffix);
+				MyStringHash lookFor = MyStringHash.GetOrCompute(component.Key + Constants.ScrapSuffix);
 				MyFixedPoint count;
 				
 				if (!PlayerInventoryDeltas.TryGetValue(lookFor, out count) || PlayerInventoryDeltas.Count == 0)
@@ -171,12 +162,12 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 		private void RollSomeDice(List<RefundOpportunity> opportunities, List<RefundOpportunity> refunds)
 		{
 			if (opportunities.Count == 0) return;
-			foreach (var ro in opportunities)
+			foreach (RefundOpportunity ro in opportunities)
 			{
 				var refund = 0;
 				for (var i = 0; i < ro.Count; i++)
 				{
-					int chance = Chance;
+					int chance = Constants.Chance;
 					if (chance > _refundChance) continue;
 					refund++;
 				}
@@ -192,7 +183,7 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 		
 		public void RefundComponents()
 		{
-			foreach (var refund in _refunds)
+			foreach (RefundOpportunity refund in _refunds)
 			{
 				var id = new MyDefinitionId(typeof(MyObjectBuilder_Ore), refund.ScrapSubtype);
 				int val = PlayerInventory.ComputeAmountThatFits(id).ToIntSafe();
@@ -229,7 +220,7 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 		{
 			MyInventory bodyBag = null;
 
-			foreach (var ent in Statics.DetectAllEntitiesInSphere(PlayerInventory.Owner.PositionComp.GetPosition(), 5))
+			foreach (MyEntity ent in Statics.DetectAllEntitiesInSphere(PlayerInventory.Owner.PositionComp.GetPosition(), 5))
 			{
 				var bag = ent as MyInventoryBagEntity;
 				if (bag == null) continue;
@@ -242,7 +233,7 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 			if (bodyBag == null) return;
 
 			// Snapshot InventoryBag Contents
-			foreach (var item in bodyBag.GetItems())
+			foreach (MyPhysicalInventoryItem item in bodyBag.GetItems())
 			{
 				if (!ValidateScrap(item.Content.SubtypeId.ToString())) continue;
 				if (!BodyBagContents.TryAdd(item.Content.SubtypeId, item.Amount))
@@ -253,7 +244,7 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 			DamagedBlock.MoveItemsFromConstructionStockpile(bodyBag);
 
 			// Diff Body Bag Contents
-			foreach (var item in bodyBag.GetItems())
+			foreach (MyPhysicalInventoryItem item in bodyBag.GetItems())
 			{
 				if (!ValidateScrap(item.Content.SubtypeId.ToString())) continue;
 				MyFixedPoint amount;
@@ -263,7 +254,7 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 
 				RefundOpportunity ro = _refundPool.Get();
 				ro.Count = (int)amount;
-				ro.CompSubtype = item.Content.SubtypeName.Substring(0, item.Content.SubtypeName.Length - ScrapSuffix.Length);
+				ro.CompSubtype = item.Content.SubtypeName.Substring(0, item.Content.SubtypeName.Length - Constants.ScrapSuffix.Length);
 				ro.ScrapSubtype = item.Content.SubtypeId;
 
 				_excessRefundOpportunities.Add(ro);
@@ -274,7 +265,7 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 
 			// Refund the rolls
 			
-			foreach (var refund in _excessRefunds)
+			foreach (RefundOpportunity refund in _excessRefunds)
 			{
 				IMyInventoryItem invItem = new MyPhysicalInventoryItem()
 				{
