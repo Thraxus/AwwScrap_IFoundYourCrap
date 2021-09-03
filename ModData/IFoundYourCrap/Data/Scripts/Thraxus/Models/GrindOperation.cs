@@ -19,8 +19,13 @@ using VRageMath;
 
 namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 {
-	public class GrindOperationInformation : BaseLoggingClass
+	public class GrindOperation : BaseLoggingClass
 	{
+		public GrindOperation(UserSettings userSettings)
+		{
+			_userSettings = userSettings ?? new UserSettings();
+		}
+
 		protected override string Id { get; } = "GrindOperationInformation";
 
 		private readonly GenericObjectPool<RefundOpportunity> _refundPool = new GenericObjectPool<RefundOpportunity>(() => new RefundOpportunity());
@@ -42,6 +47,8 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 		public MyInventory PlayerInventory;
 		public IMyAngleGrinder Grinder;
 		public IMySlimBlock DamagedBlock;
+
+		private readonly UserSettings _userSettings;
 
 		public long GrinderId;
 		public long Tick;
@@ -79,8 +86,8 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 
 		private void GetBeforeItems()
 		{
-			_refundChance = Grinder.DefinitionId.SubtypeId == Constants.AngleGrinderHigh ? UserSettings.RefundChanceHigh :
-				Grinder.DefinitionId.SubtypeId == Constants.AngleGrinderMid ? UserSettings.RefundChanceMid : UserSettings.RefundChanceLow;
+			_refundChance = Grinder.DefinitionId.SubtypeId == Constants.EliteAngleGrinder ? _userSettings.EliteGrinderReturnRate:
+				Grinder.DefinitionId.SubtypeId == Constants.ProficientAngleGrinder ? _userSettings.ProficientGrinderReturnRate : _userSettings.BasicGrinderReturnRate;
 			foreach (MyPhysicalInventoryItem item in PlayerInventory.GetItems())
 			{
 				
@@ -324,7 +331,7 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 			MyTimerComponent component;
 			if (myInventoryBagEntity.Components.TryGet<MyTimerComponent>(out component))
 			{
-				component.ChangeTimerTick(10000);
+				component.ChangeTimerTick((uint)(_userSettings.ScrapBodyBagDecayInMinutes * Common.Utilities.CommonSettings.TicksPerMinute));
 			}
 
 			myInventoryBagEntity.DisplayNameText = "AwwScrap: I Found Your Crap!";

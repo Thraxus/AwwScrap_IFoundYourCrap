@@ -150,7 +150,7 @@
     <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Common\Utilities\Tools\Profiler.cs" />
     <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\FoundYourCrapCore.cs" />
     <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Models\GenericObjectPool.cs" />
-    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Models\GrindOperationInformation.cs" />
+    <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Models\GrindOperation.cs" />
     <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Models\RefundOpportunity.cs" />
     <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Support\Constants.cs" />
     <Compile Include="ModData\IFoundYourCrap\Data\Scripts\Thraxus\Support\UserSettings.cs" />

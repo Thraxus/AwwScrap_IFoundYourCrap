@@ -16,7 +16,7 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Common.Utilities.FileHandlers
 				if (binaryWriter == null)
 					return;
 				byte[] binary = MyAPIGateway.Utilities.SerializeToBinary(data);
-				binaryWriter.Write(binary.Length);
+				//binaryWriter.Write(binary.Length);
 				binaryWriter.Write(binary);
 				binaryWriter.Flush();
 			}
@@ -32,7 +32,6 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Common.Utilities.FileHandlers
 				if (textWriter == null)
 					return;
 				string text = MyAPIGateway.Utilities.SerializeToXML(data);
-				textWriter.Write(text.Length);
 				textWriter.Write(text);
 				textWriter.Flush();
 			}
