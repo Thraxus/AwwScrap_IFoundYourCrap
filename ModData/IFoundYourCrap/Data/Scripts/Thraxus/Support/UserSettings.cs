@@ -8,15 +8,19 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Support
 	{
 		//[DefaultValue(Constants.DefaultBasicGrinderRefund)]
 		[XmlElement("BasicGrinderReturnRate", typeof(int))]
-		public int BasicGrinderReturnRate = 90;
+		public int BasicGrinderReturnRate = 80;
+
+		//[DefaultValue(Constants.DefaultProficientGrinderRefund)]
+		[XmlElement("EnhancedGrinderReturnRate", typeof(int))]
+		public int EnhancedGrinderReturnRate = 60;
 
 		//[DefaultValue(Constants.DefaultProficientGrinderRefund)]
 		[XmlElement("ProficientGrinderReturnRate", typeof(int))]
-		public int ProficientGrinderReturnRate = 60;
+		public int ProficientGrinderReturnRate = 40;
 
 		//[DefaultValue(Constants.DefaultEliteGrinderRefund)]
 		[XmlElement("EliteGrinderReturnRate", typeof(int))]
-		public int EliteGrinderReturnRate = 30;
+		public int EliteGrinderReturnRate = 20;
 
 		//[DefaultValue(Constants.DefaultBodyBagDecayInMinutes)]
 		[XmlElement("ScrapBodyBagDecayInMinutes", typeof(int))]
@@ -33,6 +37,7 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Support
 		public void ParseLoadedUserSettings(UserSettings settings)
 		{
 			BasicGrinderReturnRate = settings.BasicGrinderReturnRate >= 0 && settings.BasicGrinderReturnRate < 100 ? settings.BasicGrinderReturnRate : Constants.DefaultBasicGrinderRefund;
+			EnhancedGrinderReturnRate = settings.EnhancedGrinderReturnRate >= 0 && settings.EnhancedGrinderReturnRate < 100 ? settings.EnhancedGrinderReturnRate : Constants.DefaultEnhancedGrinderRefund;
 			ProficientGrinderReturnRate = settings.ProficientGrinderReturnRate >= 0 && settings.ProficientGrinderReturnRate < 100 ? settings.ProficientGrinderReturnRate : Constants.DefaultProficientGrinderRefund;
 			EliteGrinderReturnRate = settings.EliteGrinderReturnRate >= 0 && settings.EliteGrinderReturnRate < 100 ? settings.EliteGrinderReturnRate : Constants.DefaultEliteGrinderRefund;
 			ScrapBodyBagDecayInMinutes = settings.ScrapBodyBagDecayInMinutes >= 0 && settings.ScrapBodyBagDecayInMinutes < 10 ? settings.ScrapBodyBagDecayInMinutes : Constants.DefaultBodyBagDecayInMinutes;
@@ -48,6 +53,7 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Support
 			sb.AppendLine("---------- IFoundYourScrap Settings ----------");
 			sb.AppendLine();
 			sb.AppendFormat("{0, -4}BasicGrinderReturnRate: {1, -6}\n", " ", BasicGrinderReturnRate);
+			sb.AppendFormat("{0, -4}EnhancedGrinderReturnRate: {1, -6}\n", " ", EnhancedGrinderReturnRate);
 			sb.AppendFormat("{0, -4}ProficientGrinderReturnRate: {1, -6}\n", " ", ProficientGrinderReturnRate);
 			sb.AppendFormat("{0, -4}EliteGrinderReturnRate: {1, -6}\n", " ", EliteGrinderReturnRate);
 			sb.AppendFormat("{0, -4}ScrapBodyBagDecayInMinutes: {1, -6}\n", " ", ScrapBodyBagDecayInMinutes);

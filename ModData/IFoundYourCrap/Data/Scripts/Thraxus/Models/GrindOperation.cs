@@ -96,8 +96,11 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 			//	Return true;
 			if (DamagedBlock.CubeGrid.BigOwners.Contains(Grinder.OwnerIdentityId))
 			{
-				_refundChance = Grinder.DefinitionId.SubtypeId == Constants.EliteAngleGrinder ? _userSettings.EliteGrinderReturnRate :
-					Grinder.DefinitionId.SubtypeId == Constants.ProficientAngleGrinder ? _userSettings.ProficientGrinderReturnRate : _userSettings.BasicGrinderReturnRate;
+				_refundChance = 
+					Grinder.DefinitionId.SubtypeId == Constants.EliteAngleGrinder ? _userSettings.EliteGrinderReturnRate :
+					Grinder.DefinitionId.SubtypeId == Constants.ProficientAngleGrinder ? _userSettings.ProficientGrinderReturnRate :
+					Grinder.DefinitionId.SubtypeId == Constants.EnhancedAngleGrinder ? _userSettings.EnhancedGrinderReturnRate :
+					_userSettings.BasicGrinderReturnRate;
 				return true;
 			}
 
@@ -117,11 +120,11 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 			{
 				if (_userSettings.ReturnComponentsFromUnownedGrids)
 				{
-					_refundChance = Grinder.DefinitionId.SubtypeId == Constants.EliteAngleGrinder
-						? _userSettings.EliteGrinderReturnRate
-						: Grinder.DefinitionId.SubtypeId == Constants.ProficientAngleGrinder
-							? _userSettings.ProficientGrinderReturnRate
-							: _userSettings.BasicGrinderReturnRate;
+					_refundChance =
+						Grinder.DefinitionId.SubtypeId == Constants.EliteAngleGrinder ? _userSettings.EliteGrinderReturnRate :
+						Grinder.DefinitionId.SubtypeId == Constants.ProficientAngleGrinder ? _userSettings.ProficientGrinderReturnRate :
+						Grinder.DefinitionId.SubtypeId == Constants.EnhancedAngleGrinder ? _userSettings.EnhancedGrinderReturnRate :
+						_userSettings.BasicGrinderReturnRate;
 					_refundChance = (int)(_refundChance * (float)_userSettings.ReturnRateForUnownedGrids/100);
 					return true;
 				}
@@ -132,8 +135,11 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 			// If Factions match: 
 			//	Calculate return rate (full)
 			//	Return true;
-			_refundChance = Grinder.DefinitionId.SubtypeId == Constants.EliteAngleGrinder ? _userSettings.EliteGrinderReturnRate :
-				Grinder.DefinitionId.SubtypeId == Constants.ProficientAngleGrinder ? _userSettings.ProficientGrinderReturnRate : _userSettings.BasicGrinderReturnRate;
+			_refundChance =
+				Grinder.DefinitionId.SubtypeId == Constants.EliteAngleGrinder ? _userSettings.EliteGrinderReturnRate :
+				Grinder.DefinitionId.SubtypeId == Constants.ProficientAngleGrinder ? _userSettings.ProficientGrinderReturnRate :
+				Grinder.DefinitionId.SubtypeId == Constants.EnhancedAngleGrinder ? _userSettings.EnhancedGrinderReturnRate :
+				_userSettings.BasicGrinderReturnRate;
 			return true;
 		}
 
