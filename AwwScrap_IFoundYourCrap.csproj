@@ -157,11 +157,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ModData\IFoundYourCrap\Data\metadata.mod" />
-    <Content Include="ModData\IFoundYourCrap\Data\Thumb.jpg" />
+    <Content Include="ModData\IFoundYourCrap\metadata.mod" />
+    <Content Include="ModData\IFoundYourCrap\Thumb.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ModData\IFoundYourCrap\Data\modinfo.sbmi" />
+    <None Include="ModData\IFoundYourCrap\modinfo.sbmi" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
