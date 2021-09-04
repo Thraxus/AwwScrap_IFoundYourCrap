@@ -19,7 +19,7 @@ namespace AwwScrap_IFoundYourCrap.Thraxus
 	[MySessionComponentDescriptor(MyUpdateOrder.BeforeSimulation, priority: int.MinValue + 2)]
 	public class FoundYourCrapCore: BaseSessionComp
 	{
-		protected override string CompName { get; } = "ReactiveGrindingCore";
+		protected override string CompName { get; } = "FoundYourCrapCore";
 		protected override CompType Type { get; } = CompType.Server;
 		protected override MyUpdateOrder Schedule { get; } = MyUpdateOrder.BeforeSimulation;
 
@@ -37,6 +37,12 @@ namespace AwwScrap_IFoundYourCrap.Thraxus
 			_grindOperations = new GenericObjectPool<GrindOperation>(() => new GrindOperation(_userSettings));
 
 			base.SuperEarlySetup();
+		}
+
+		public override void BeforeStart()
+		{
+			WriteToLog("EarlySetup", $"{_userSettings}", LogType.General);
+			base.BeforeStart();
 		}
 
 		protected override void EarlySetup()

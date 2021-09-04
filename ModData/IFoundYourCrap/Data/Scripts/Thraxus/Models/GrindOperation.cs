@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using AwwScrap_IFoundYourCrap.Thraxus.Common.BaseClasses;
 using AwwScrap_IFoundYourCrap.Thraxus.Common.Utilities.Statics;
 using AwwScrap_IFoundYourCrap.Thraxus.Support;
 using Sandbox.Game;
 using Sandbox.Game.Components;
 using Sandbox.Game.Entities;
+using Sandbox.ModAPI;
 using Sandbox.ModAPI.Weapons;
 using VRage;
 using VRage.Game;
@@ -84,10 +86,59 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 			return compName.EndsWith(Constants.ScrapSuffix, StringComparison.OrdinalIgnoreCase) && !compName.Equals(Constants.ScrapSuffix, StringComparison.OrdinalIgnoreCase);
 		}
 
+		private bool ValidateReturnEligibility()
+		{
+			// Get Block Grid
+			// Get BigOwner List
+			// Validate if Grinder Owner is on Big Owner list
+			// If yes: 
+			//	Calculate return rate (full)
+			//	Return true;
+			if (DamagedBlock.CubeGrid.BigOwners.Contains(Grinder.OwnerIdentityId))
+			{
+				_refundChance = Grinder.DefinitionId.SubtypeId == Constants.EliteAngleGrinder ? _userSettings.EliteGrinderReturnRate :
+					Grinder.DefinitionId.SubtypeId == Constants.ProficientAngleGrinder ? _userSettings.ProficientGrinderReturnRate : _userSettings.BasicGrinderReturnRate;
+				return true;
+			}
+
+			// If no:
+			//	Get Big Owner faction
+			//	Get Grinder faction
+			IMyFaction lf = MyAPIGateway.Session.Factions.TryGetPlayerFaction(Grinder.OwnerIdentityId);
+			IMyFaction rf = MyAPIGateway.Session.Factions.TryGetPlayerFaction(DamagedBlock.CubeGrid.BigOwners.FirstOrDefault());
+
+			// If Factions do not match (null or different)
+			//	Option A) 
+			//		Set Tick = 0 (discards refund opportunity)
+			//	Option B) 
+			//		Calculate Return Rate (full)
+			//		Multiply Return Rate by some scalar (maybe 10%)
+			if (lf == null || rf == null || rf.FactionId != lf.FactionId)
+			{
+				if (_userSettings.ReturnComponentsFromUnownedGrids)
+				{
+					_refundChance = Grinder.DefinitionId.SubtypeId == Constants.EliteAngleGrinder
+						? _userSettings.EliteGrinderReturnRate
+						: Grinder.DefinitionId.SubtypeId == Constants.ProficientAngleGrinder
+							? _userSettings.ProficientGrinderReturnRate
+							: _userSettings.BasicGrinderReturnRate;
+					_refundChance = (int)(_refundChance * (float)_userSettings.ReturnRateForUnownedGrids/100);
+					return true;
+				}
+				Tick = 0;
+				return false;
+			}
+
+			// If Factions match: 
+			//	Calculate return rate (full)
+			//	Return true;
+			_refundChance = Grinder.DefinitionId.SubtypeId == Constants.EliteAngleGrinder ? _userSettings.EliteGrinderReturnRate :
+				Grinder.DefinitionId.SubtypeId == Constants.ProficientAngleGrinder ? _userSettings.ProficientGrinderReturnRate : _userSettings.BasicGrinderReturnRate;
+			return true;
+		}
+
 		private void GetBeforeItems()
 		{
-			_refundChance = Grinder.DefinitionId.SubtypeId == Constants.EliteAngleGrinder ? _userSettings.EliteGrinderReturnRate:
-				Grinder.DefinitionId.SubtypeId == Constants.ProficientAngleGrinder ? _userSettings.ProficientGrinderReturnRate : _userSettings.BasicGrinderReturnRate;
 			foreach (MyPhysicalInventoryItem item in PlayerInventory.GetItems())
 			{
 				
@@ -137,11 +188,13 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 
 		public void ProcessBeforeSim()
 		{
+			if (!ValidateReturnEligibility()) return;
 			GetBeforeItems();
 		}
 
 		public void ProcessAfterSim()
 		{
+			if (Tick == 0) return;
 			GetAfterItems();
 			DetermineEligibleScrap();
 			RollSomeDice(_refundOpportunities, _refunds);
@@ -205,18 +258,6 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 
 				RemoveFromInventory(PlayerInventory, refund.Count, refund.ScrapSubtype);
 				AddToInventory(PlayerInventory, refund.Count, invItem);
-
-				//WriteToLog("RefundComponents",
-				//	!PlayerInventory.RemoveItemsOfType(refund.Count,
-				//		MyObjectBuilderSerializer.CreateNewObject<MyObjectBuilder_Ore>(refund.ScrapSubtype.String))
-				//		? $"Failed to remove {refund.Count} {refund.ScrapSubtype} from the players inventory!"
-				//		: $"Removed {refund.Count} {refund.ScrapSubtype} from the players inventory!", LogType.General);
-
-				
-				//WriteToLog("RefundComponents",
-				//	!PlayerInventory.Add(invItem, val)
-				//		? $"Failed to add {refund.Count} {refund.CompSubtype} to the players inventory!"
-				//		: $"Added {refund.Count} {refund.CompSubtype} to the players inventory!", LogType.General);
 			}
 
 			ReturnToPool(_refunds);
@@ -282,18 +323,6 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 
 				RemoveFromInventory(bodyBag, refund.Count, refund.ScrapSubtype);
 				AddToInventory(bodyBag, refund.Count, invItem);
-
-				//WriteToLog("RefundRemainingStockpile",
-				//	!bodyBag.RemoveItemsOfType(refund.Count,
-				//		MyObjectBuilderSerializer.CreateNewObject<MyObjectBuilder_Ore>(refund.ScrapSubtype.String))
-				//		? $"Failed to remove {refund.Count} {refund.ScrapSubtype} from the body bag!"
-				//		: $"Removed {refund.Count} {refund.ScrapSubtype} from the body bag!", LogType.General);
-
-
-				//WriteToLog("RefundRemainingStockpile",
-				//	!bodyBag.Add(invItem, refund.Count)
-				//		? $"Failed to add {refund.Count} {refund.CompSubtype} to the body bag!"
-				//		: $"Added {refund.Count} {refund.CompSubtype} to the body bag!", LogType.General);
 			}
 
 			ReturnToPool(_excessRefunds);
@@ -329,7 +358,7 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 			
 			myInventoryBagEntity.OwnerIdentityId = 0;
 			MyTimerComponent component;
-			if (myInventoryBagEntity.Components.TryGet<MyTimerComponent>(out component))
+			if (myInventoryBagEntity.Components.TryGet(out component))
 			{
 				component.ChangeTimerTick((uint)(_userSettings.ScrapBodyBagDecayInMinutes * Common.Utilities.CommonSettings.TicksPerMinute));
 			}
