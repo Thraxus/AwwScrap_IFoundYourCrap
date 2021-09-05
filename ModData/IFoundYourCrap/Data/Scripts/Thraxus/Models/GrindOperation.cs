@@ -267,6 +267,7 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 			}
 
 			ReturnToPool(_refunds);
+			if (DamagedBlock.StockpileEmpty) return;
 			RefundRemainingStockpile();
 		}
 
