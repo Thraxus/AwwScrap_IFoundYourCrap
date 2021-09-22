@@ -161,6 +161,10 @@
     <Content Include="ModData\IFoundYourCrap\Thumb.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ModData\IFoundYourCrap\Data\EntityComponents.sbc" />
+    <None Include="ModData\IFoundYourCrap\Data\EntityContainers.sbc" />
+    <None Include="ModData\IFoundYourCrap\Data\InventoryBag.sbc" />
+    <None Include="ModData\IFoundYourCrap\Models\InventoryBag.mwm" />
     <None Include="ModData\IFoundYourCrap\modinfo.sbmi" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

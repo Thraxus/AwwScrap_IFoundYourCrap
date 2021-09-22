@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+     <EntityComponents>
+
+        <EntityComponent xsi:type="MyObjectBuilder_TimerComponentDefinition">
+            <Id>
+                <TypeId>TimerComponent</TypeId>
+                <SubtypeId>InventoryBag</SubtypeId>
+            </Id>
+            
+            <!-- this value can be overridden by settings of the world -->
+            <TimeToRemoveMin>5</TimeToRemoveMin>
+        </EntityComponent>
+
+        <EntityComponent xsi:type="MyObjectBuilder_InventoryComponentDefinition">
+            <Id>
+                <TypeId>Inventory</TypeId>
+                <SubtypeId>InventoryBag</SubtypeId>
+            </Id>
+            <Volume>1</Volume>
+            <RemoveEntityOnEmpty>true</RemoveEntityOnEmpty>
+        </EntityComponent>
+
+        <EntityComponent xsi:type="MyObjectBuilder_UseObjectsComponentDefinition">
+            <Id>
+                <TypeId>UseObjectsComponent</TypeId>
+                <SubtypeId>InventoryBag</SubtypeId>
+            </Id>
+            <UseObjectFromModelBBox>inventory</UseObjectFromModelBBox>
+        </EntityComponent>
+
+        <EntityComponent xsi:type="MyObjectBuilder_ModelComponentDefinition">
+            <Id>
+                <TypeId>ModelComponent</TypeId>
+                <SubtypeId>InventoryBag</SubtypeId>
+            </Id>
+            <Model>Models\InventoryBag.mwm</Model>
+            <DisplayName>DisplayName_AstronautBackpack</DisplayName>
+            <Icon>Textures\GUI\Icons\AstronautBackpack.dds</Icon>
+            <Size>
+                <X>0.3</X>
+                <Y>1.0</Y>
+                <Z>0.2</Z>
+            </Size>
+            <Mass>5</Mass>
+            <Volume>60</Volume>
+        </EntityComponent>
+
+        <EntityComponent xsi:type="MyObjectBuilder_PhysicsBodyComponentDefinition">
+            <Id>
+                <TypeId>PhysicsBodyComponent</TypeId>
+                <SubtypeId>InventoryBag</SubtypeId>
+            </Id>
+            <RigidBodyFlags>RBF_DEFAULT</RigidBodyFlags>
+            <CollisionLayer>LightFloatingObjectCollisionLayer</CollisionLayer>
+            <MassPropertiesComputation>Box</MassPropertiesComputation>
+            <AngularDamping>2</AngularDamping>
+            <LinearDamping>0.1</LinearDamping>
+            <CreateFromCollisionObject>true</CreateFromCollisionObject>
+            <ForceActivate>true</ForceActivate>            
+            <Serialize>true</Serialize>
+        </EntityComponent>
+
+ 
+
+    </EntityComponents>
+
+</Definitions>

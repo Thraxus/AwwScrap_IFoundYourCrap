@@ -28,7 +28,7 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 			_userSettings = userSettings ?? new UserSettings();
 		}
 
-		protected override string Id { get; } = "GrindOperationInformation";
+		protected override string Id { get; } = nameof(GrindOperation);
 
 		private readonly GenericObjectPool<RefundOpportunity> _refundPool = new GenericObjectPool<RefundOpportunity>(() => new RefundOpportunity());
 
@@ -353,6 +353,7 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 			worldMatrix.Translation += worldMatrix.Down + worldMatrix.Forward;
 
 			var bagDefinition = new MyDefinitionId(typeof(MyObjectBuilder_InventoryBagEntity), "AstronautBackpack");
+			//var bagDefinition = new MyDefinitionId(typeof(MyObjectBuilder_InventoryBagEntity), "InventoryBag");
 			MyContainerDefinition definition;
 			
 			if (!MyComponentContainerExtension.TryGetContainerDefinition(bagDefinition.TypeId, bagDefinition.SubtypeId, out definition))
@@ -376,7 +377,8 @@ namespace AwwScrap_IFoundYourCrap.Thraxus.Models
 			myEntity.Physics.LinearVelocity = Vector3.Zero;
 			myEntity.Physics.AngularVelocity = Vector3.Zero;
 			myEntity.Render.EnableColorMaskHsv = true;
-			myEntity.Render.ColorMaskHsv = PlayerInventory.Owner.Render.ColorMaskHsv;
+			//myEntity.Render.ColorMaskHsv = PlayerInventory.Owner.Render.ColorMaskHsv;
+			myEntity.Render.ColorMaskHsv = new Vector3(1,0,1);
 
 			var backpackInventory = new MyInventory((MyFixedPoint)100,100000,new Vector3(5,5,5),MyInventoryFlags.CanSend)
 			{
